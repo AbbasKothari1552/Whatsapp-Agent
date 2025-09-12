@@ -1,0 +1,12 @@
+# Vector DB libraries
+qdrant-client 
+sentence-transformers 
+numpy
+
+# Persistence storing libraries
+langgraph-checkpoint-sqlite
+langgraph-checkpoint-postgres
+psycopg2-binary
+
+
+python-dotenv
