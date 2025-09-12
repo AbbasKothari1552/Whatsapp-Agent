@@ -1,3 +1,14 @@
+# Langchain library
+langgraph
+langsmith
+langchain-groq
+langchain-community
+
+# FastAPI and related libraries
+fastapi
+uvicorn
+python-multipart
+
 # Vector DB libraries
 qdrant-client 
 sentence-transformers 
@@ -7,6 +18,8 @@ numpy
 langgraph-checkpoint-sqlite
 langgraph-checkpoint-postgres
 psycopg2-binary
+asyncpg
 
 
 python-dotenv
+pydantic-settings
