@@ -12,6 +12,8 @@ wheels/
 # credentials
 .env
 
+# logs
+logs/
 
 # test codes
 src/test
