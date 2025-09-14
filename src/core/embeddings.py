@@ -3,7 +3,9 @@ from sentence_transformers import SentenceTransformer
 
 from src.core.settings import settings
 
-model = SentenceTransformer(settings.EMBEDDING_MODEL)
+model = SentenceTransformer("models/all-MiniLM-L6-v2")
+# # Save it locally wherever you want
+# model.save("models/all-MiniLM-L6-v2")
 
 async def embed_text(text: str):
     # Wrap in asyncio to avoid blocking

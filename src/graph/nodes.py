@@ -5,11 +5,13 @@ from langchain_core.prompts import ChatPromptTemplate
 
 from src.core.prompts import (
     ANALYZER_SYSTEM_PROMPT,
-    ANALYZER_USER_PROMPT
+    ANALYZER_USER_PROMPT,
+    ASSISTANT_SYSTEM_PROMPT
 )
 from src.graph.tools import (
-    vector_search,
+    make_vector_search,
     client_db_query,
+    get_schema_details
 )
 from src.graph.utils.helpers import (
     get_chat_model
@@ -44,22 +46,52 @@ async def analyzer_node(state: ChatState) -> ChatState:
     state['should_continue'] = content.get("should_continue")
     if content.get("response"):
         state["response"] = content.get("response", "")
+        # Create new messages to append
+        new_human_message = HumanMessage(content=state["query"])
         new_ai_message = AIMessage(content=state["response"])
-
-    # Create new messages to append
-    new_human_message = HumanMessage(content=state["query"])
-
-    return {
-        **state, 
-        'messages': [new_human_message, new_ai_message]
-    }
+        return {
+            **state, 
+            'messages': [new_human_message, new_ai_message]
+        }
+    return state
 
 
 async def assistant_node(state: ChatState) -> ChatState:
+
     model = get_chat_model()
-
     # Define tools
-    tools = [vector_search, client_db_query]
-
+    tools = [make_vector_search(state), client_db_query, get_schema_details]
     # Create ReAct agent
     react_agent = create_react_agent(model, tools=tools)
+
+    # Inject language dynamically here
+    system_prompt = ASSISTANT_SYSTEM_PROMPT.format(language=state.get('language'))
+
+    # Build message sequence
+    messages = [
+        SystemMessage(content=system_prompt),
+        *state["messages"],  # previous conversation (history)
+        HumanMessage(content=state["query"])
+    ]
+
+    response = await react_agent.ainvoke({
+        "messages": messages
+    })
+
+    from pprint import pprint
+    print("Response:")
+    pprint(response)
+
+    if response:
+        content = response["messages"][-1].content
+        state['response'] = content
+        # Create new messages to append
+        new_human_message = HumanMessage(content=state["query"])
+        new_ai_message = AIMessage(content=state["response"])
+        return {
+            **state, 
+            'messages': [new_human_message, new_ai_message]
+        }
+    
+    return state
+

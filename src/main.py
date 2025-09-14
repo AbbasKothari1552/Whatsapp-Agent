@@ -104,7 +104,7 @@ async def chat(user_id: str, message: str):
 async def chat(user_id: str):
     
     thread_id = get_or_create_thread_id(user_id)
-    config = {"configurable": {"thread_id": thread_id}}
+    config = {"configurable": {"thread_id": "2022_2025-09-13"}}
 
     # Use the context manager to get the actual saver
     async with AsyncPostgresSaver.from_conn_string(settings.PG_DATABASE_URL) as saver:

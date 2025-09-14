@@ -60,9 +60,9 @@ def start_scheduler():
     scheduler.add_job(
         flush_yesterday_threads, 
         "cron", 
-        hour=00, 
-        minute=30,
+        hour=9, 
+        minute=15,
         misfire_grace_time=3600,  # 1 hour grace period
         )
     scheduler.start()
-    logger.info("Scheduler started - flushing job set for 00:30 daily")
+    logger.info("Scheduler started - flushing job set for 09:10 daily")

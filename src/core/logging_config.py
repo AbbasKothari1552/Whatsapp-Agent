@@ -14,7 +14,7 @@ LOG_FILE = settings.LOG_DIR / f"dms_{CURRENT_DATE}.log"
 
 # Basic configuration
 logging.basicConfig(
-    level=logging.INFO,
+    level=settings.LOG_LEVEL,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
         logging.FileHandler(LOG_FILE),

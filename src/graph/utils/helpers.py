@@ -4,7 +4,7 @@ from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
 from sentence_transformers import SentenceTransformer
 
-from src.graph.utils.db import client_db
+from src.graph.utils.db import checkpoint_db
 from src.core.settings import settings
 
 from src.core.logging_config import get_logger
@@ -134,6 +134,8 @@ async def delete_old_messages(conn, days_to_keep: int = 30):
         logger.error(f"Error deleting old messages: {e}")
         raise
 
+
+
 async def list_threads_for_date(date: str):
     """List all thread IDs for a specific date"""
     query = f"""
@@ -143,7 +145,7 @@ async def list_threads_for_date(date: str):
     """
     date = date.strip()
     try:
-        async with client_db.get_connection() as conn:
+        async with checkpoint_db.get_connection() as conn:
             rows = await conn.fetch(query, f"%_{date}")
             logger.info(f"Found {len(rows)} threads for date {date}")
             return [row['thread_id'] for row in rows]

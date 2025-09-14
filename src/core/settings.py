@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     # Postgres DB settings
     PG_DATABASE_URL: str
     PG_DATABASE_URL_CLIENT: str
+    CLIENT_SCHEMA_NAME: str = "public"
 
     # QDrant Vector DB settings
     QDRANT_URL: str
