@@ -12,6 +12,8 @@ from src.core.embeddings import embed_text
 from src.graph.graph import build_graph
 from src.schedular.schedular import start_scheduler
 
+from src.graph.utils.ms_sql_manager import client_db
+
 from src.graph.utils.helpers import (
     get_or_create_thread_id,
     log_conversation,
@@ -31,11 +33,14 @@ async def lifespan(app: FastAPI):
         # Initialize Postgres database pool
         await checkpoint_db.create_pool()
 
-        # Initialize Postgres database pool
-        await client_db.create_pool()
+        # # Initialize Postgres database pool
+        # await client_db.create_pool()
 
         # Initialize Qdrant connection
         await qdrant_manager.connect()
+
+        # test
+        await client_db.create_pool()
 
         async with AsyncPostgresSaver.from_conn_string(settings.PG_DATABASE_URL) as saver:
             await saver.setup()

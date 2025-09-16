@@ -24,3 +24,4 @@ asyncpg
 python-dotenv
 pydantic-settings
 apscheduler
+aioodbc

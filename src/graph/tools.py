@@ -5,7 +5,7 @@ from src.core.settings import settings
 from src.graph.state import ChatState
 # Assuming you already have qdrant_manager and client_db available
 from src.graph.utils.qdrant_db import qdrant_manager
-from src.graph.utils.db import client_db, checkpoint_db
+from src.graph.utils.ms_sql_manager import client_db
 from src.core.embeddings import embed_text
 from src.core.db_query import (
     SCHEMA_QUERY
@@ -40,8 +40,10 @@ async def _get_schema_details():
         structured_data = {}
         
         for row in results:
-            table_name = row['table_name']
-            column_name = row['column_name']
+            # row is a tuple: (table_name, column_name, data_type)
+            table_name = row[0]
+            column_name = row[1]
+            data_type = row[2]
             
             # Initialize table entry if it doesn't exist
             if table_name not in structured_data:
@@ -53,7 +55,7 @@ async def _get_schema_details():
             # Add column details
             column_info = {
                 'column_name': column_name,
-                'data_type': row['data_type'],
+                'data_type': data_type,
             }
             
             structured_data[table_name]['columns'].append(column_info)
