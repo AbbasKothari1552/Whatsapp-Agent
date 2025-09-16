@@ -68,7 +68,7 @@ async def _get_schema_details():
         raise
 
 @tool
-async def client_db_query(query: str) -> List[Dict[str, Any]]:
+async def client_db_query(query: str) -> Dict[str, Any]:
     """
     Query the client database (Postgres for now, Mongo later) for structured company data.
     Args:
@@ -78,8 +78,18 @@ async def client_db_query(query: str) -> List[Dict[str, Any]]:
     """
     async with client_db.get_connection() as conn:
         rows = await conn.fetch(query)
-        return [dict(r) for r in rows]
-    
+        if not rows:
+            return {
+                "success": True, 
+                "data": [], 
+                "message": "No matching records found"
+            }
+        result = [dict(r) for r in rows]
+        return {
+            "success": True, 
+            "data": result,
+            "message": f"Found {len(result)} matching records"
+        } 
 
 @tool
 # get schema details

@@ -3,7 +3,7 @@ from sentence_transformers import SentenceTransformer
 
 from src.core.settings import settings
 
-model = SentenceTransformer("models/all-MiniLM-L6-v2")
+model = SentenceTransformer("all-MiniLM-L6-v2")
 # # Save it locally wherever you want
 # model.save("models/all-MiniLM-L6-v2")
 
