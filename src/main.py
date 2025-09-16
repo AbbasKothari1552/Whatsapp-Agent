@@ -1,5 +1,10 @@
 import asyncio
 import sys
+
+# Fix psycopg async issue on Windows
+if sys.platform.startswith("win"):
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from langchain_core.messages import HumanMessage
