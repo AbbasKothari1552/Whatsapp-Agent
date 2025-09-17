@@ -107,7 +107,8 @@ class AsyncMSSQLManager:
             async with conn.cursor() as cur:
                 await cur.execute(query, args)
                 rows = await cur.fetchall()
-                return rows
+                columns = [desc[0] for desc in cur.description]
+                return [dict(zip(columns, row)) for row in rows]
 
     async def fetch_one(self, query: str, *args):
         """Fetch single row"""

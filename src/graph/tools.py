@@ -25,6 +25,8 @@ def make_vector_search(state: ChatState):
             List of relevant documents
         """
         results = await qdrant_manager.search(query, state["user_id"], embed_text)
+        if results is None:
+            return ["No results found"]
         return [r["content"] for r in results]
     return _vector_search
 
@@ -41,9 +43,9 @@ async def _get_schema_details():
         
         for row in results:
             # row is a tuple: (table_name, column_name, data_type)
-            table_name = row[0]
-            column_name = row[1]
-            data_type = row[2]
+            table_name = row["table_name"]
+            column_name = row["column_name"]
+            data_type = row["data_type"]
             
             # Initialize table entry if it doesn't exist
             if table_name not in structured_data:
@@ -78,20 +80,19 @@ async def client_db_query(query: str) -> Dict[str, Any]:
     Returns:
         List of records from the client database
     """
-    async with client_db.get_connection() as conn:
-        rows = await conn.fetch(query)
-        if not rows:
-            return {
-                "success": True, 
-                "data": [], 
-                "message": "No matching records found"
-            }
-        result = [dict(r) for r in rows]
+    # async with client_db.get_connection() as conn:
+    rows = await client_db.fetch_all(query)
+    if not rows:
         return {
             "success": True, 
-            "data": result,
-            "message": f"Found {len(result)} matching records"
-        } 
+            "data": [], 
+            "message": "No matching records found"
+        }
+    return {
+        "success": True, 
+        "data": rows,
+        "message": f"Found {len(rows)} matching records"
+    } 
 
 @tool
 # get schema details
