@@ -20,8 +20,14 @@ langgraph-checkpoint-postgres
 psycopg2-binary
 asyncpg
 
-
+IPython
 python-dotenv
 pydantic-settings
 apscheduler
 aioodbc
+
+# Image processing
+torch 
+torchvision 
+transformers 
+pillow

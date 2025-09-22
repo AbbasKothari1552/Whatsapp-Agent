@@ -8,6 +8,10 @@ class ChatState(TypedDict):
     thread_id: str
     user_id: str
     query: str
+    file: str
+    file_extension: str
+    is_voice_msg: bool = False
+    voice_msg_transcription: str
     language: str # user preferred language
     should_continue: bool
     response: str

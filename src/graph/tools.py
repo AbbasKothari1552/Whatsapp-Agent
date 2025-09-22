@@ -24,8 +24,8 @@ def make_vector_search(state: ChatState):
         Returns:
             List of relevant documents
         """
-        results = await qdrant_manager.search(query, state["user_id"], embed_text)
-        if results is None:
+        results = await qdrant_manager.search_messages(query, state["user_id"])
+        if not results:
             return ["No results found"]
         return [r["content"] for r in results]
     return _vector_search
