@@ -1,8 +1,11 @@
+import os
 import json
+from groq import Groq
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langgraph.prebuilt import create_react_agent
 from langchain_core.prompts import ChatPromptTemplate
 
+from src.core.settings import settings
 from src.core.prompts import (
     ANALYZER_SYSTEM_PROMPT,
     ANALYZER_USER_PROMPT,
@@ -18,6 +21,9 @@ from src.graph.utils.helpers import (
 )
 
 from src.graph.state import ChatState
+
+from src.core.logging_config import get_logger
+logger = get_logger(__name__)
 
 
 async def analyzer_node(state: ChatState) -> ChatState:
@@ -93,5 +99,43 @@ async def assistant_node(state: ChatState) -> ChatState:
             'messages': [new_human_message, new_ai_message]
         }
     
+    return state
+
+
+async def voice_transcription_node(state: ChatState) -> ChatState:
+    # Placeholder for future implementation
+    if state.get("file") is None:
+        return state
+
+    file_path = state["file"]
+    file_ext = file_path.split(".")[-1].lower()
+
+    # check if file is an audio file
+    if file_ext not in settings.AUDIO_EXTENSIONS:
+        logger.error(f"Unsupported audio format: {file_ext}")
+        return state
+
+    # Initialize Groq client
+    client = Groq()
+    try:
+        with open(file_path, "rb") as file:
+            # Transcribe audio file
+            transcription = client.audio.transcriptions.create(
+                file=(file_path, file.read()),
+                model=settings.AUDIO_MODEL,
+                response_format="verbose_json",
+            )
+        
+        print("Transcription result:", transcription.text)
+
+        state["voice_msg_transcription"] = transcription.text
+        state["query"] = transcription.text
+
+        return state
+    
+    except Exception as e:
+        logger.error(f"Error during voice transcription: {e}")
+
+
     return state
 

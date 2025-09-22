@@ -47,7 +47,6 @@ async def flush_yesterday_threads():
                     user_id=user_id,
                     thread_id=thread_id,
                     messages=messages,
-                    embed_fn=embed_text,
                 )
 
                 logger.info(f"Flushed {len(messages)} messages for thread={thread_id} to Qdrant")
@@ -60,8 +59,8 @@ def start_scheduler():
     scheduler.add_job(
         flush_yesterday_threads, 
         "cron", 
-        hour=9, 
-        minute=15,
+        hour=18, 
+        minute=46,
         misfire_grace_time=3600,  # 1 hour grace period
         )
     scheduler.start()

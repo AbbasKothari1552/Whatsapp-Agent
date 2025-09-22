@@ -1,5 +1,11 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from qdrant_client.http.models import Distance
+
+from src.core.embeddings import (
+    _embed_text,
+    _embed_image,
+)
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -21,6 +27,19 @@ class Settings(BaseSettings):
     COLLECTION_NAME: str = "whatsapp_agent"
     EMBEDDING_DIM: int = 384
 
+    COLLECTIONS_CONFIG: dict = {
+        "whatsapp_agent": {
+                "dim": 384,  # e.g. settings.EMBEDDING_DIM
+                "distance": Distance.COSINE,
+                "embed_fn": _embed_text
+            },
+        "image_products": {
+            "dim": 512,  # depends on your image encoder
+            "distance": Distance.COSINE,
+            "embed_fn": _embed_image
+        }
+    }
+
     # LLM Models
     QWEN_LLM: str = "qwen/qwen3-32b"
     OPENAI_GPT_120: str = "openai/gpt-oss-120b"
@@ -30,7 +49,7 @@ class Settings(BaseSettings):
 
     # logging settings
     DEBUG: bool = False
-    LOG_LEVEL: str = "DEBUG"
+    LOG_LEVEL: str = "ERROR"
     LOG_DIR: Path  = Path("logs")
 
     # Langsmith settings
@@ -38,6 +57,10 @@ class Settings(BaseSettings):
     LANGSMITH_TRACING: str 
     LANGSMITH_ENDPOINT: str 
     LANGSMITH_PROJECT: str 
+
+    # Audio Transcription settings
+    AUDIO_EXTENSIONS: list = ["mp3", "wav", "ogg", "opus"]
+    AUDIO_MODEL: str = "whisper-large-v3"
 
 
 settings = Settings()

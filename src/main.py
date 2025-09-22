@@ -69,9 +69,9 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.post("/chat/")
-async def chat(user_id: str, message: str):
+async def chat(user_id: str, message: str, file: str = None):
     
-    input_message = [HumanMessage(content=message)]
+    # input_message = [HumanMessage(content=message)]
     thread_id = get_or_create_thread_id(user_id)
 
     config = {"configurable": {"thread_id": str(thread_id)}}
@@ -81,6 +81,9 @@ async def chat(user_id: str, message: str):
         'user_id': user_id,
         'query': message,
     }
+
+    if file:
+        initial_state['file'] = file
 
     # Use the context manager to get the actual saver
     async with AsyncPostgresSaver.from_conn_string(settings.PG_DATABASE_URL) as saver:
