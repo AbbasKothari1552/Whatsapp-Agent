@@ -10,16 +10,16 @@ from fastapi import FastAPI
 from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
-from src.graph.utils.db import checkpoint_db, client_db
-from src.graph.utils.qdrant_db import qdrant_manager
+from src.utils.db import checkpoint_db, client_db
+from src.utils.qdrant_db import qdrant_manager
 from src.core.settings import settings
 from src.core.embeddings import embed_text
-from src.graph.graph import build_graph
+from src.agents.whatsapp.graph import build_graph
 from src.schedular.schedular import start_scheduler
 
-from src.graph.utils.ms_sql_manager import client_db
+from src.utils.ms_sql_manager import client_db
 
-from src.graph.utils.helpers import (
+from src.utils.helpers import (
     get_or_create_thread_id,
     log_conversation,
     get_conversation_history,

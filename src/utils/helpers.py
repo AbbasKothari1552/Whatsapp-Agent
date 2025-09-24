@@ -4,7 +4,7 @@ from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
 from sentence_transformers import SentenceTransformer
 
-from src.graph.utils.db import checkpoint_db
+from src.utils.db import checkpoint_db
 from src.core.settings import settings
 
 from src.core.logging_config import get_logger

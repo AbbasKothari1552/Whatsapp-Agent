@@ -1,4 +1,4 @@
-from src.graph.state import ChatState
+from src.agents.whatsapp.state import ChatState
 
 from src.core.settings import settings
 
@@ -22,8 +22,7 @@ def file_router(state: ChatState):
     #     state["is_voice_msg"] = False
     #     return "ImageNode"
     else:
-        logger.error(f"Unsupported file format: {file}")
-        return "AnalyzerNode"   # unsupported file → just go to normal assistant flow
+        return "DocParserSubGraph"  # default to document parser for other file types
 
 
 def analyzer_router(state: ChatState):

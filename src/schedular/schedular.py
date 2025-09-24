@@ -2,13 +2,13 @@ import datetime
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
-from src.graph.graph import build_graph
+from src.agents.whatsapp.graph import build_graph
 from src.core.settings import settings
-from src.graph.utils.qdrant_db import qdrant_manager
+from src.utils.qdrant_db import qdrant_manager
 from src.core.embeddings import embed_text
 from src.core.logging_config import get_logger
 
-from src.graph.utils.helpers import (
+from src.utils.helpers import (
     list_threads_for_date
 )
 

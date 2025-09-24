@@ -12,6 +12,7 @@ class ChatState(TypedDict):
     file_extension: str
     is_voice_msg: bool = False
     voice_msg_transcription: str
+    doc_text: str
     language: str # user preferred language
     should_continue: bool
     response: str
