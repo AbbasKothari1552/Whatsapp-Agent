@@ -6,3 +6,5 @@ class State(TypedDict):
     extraction_status: str
     doc_text: str
     doc_category: str
+    products: List[dict]
+    should_continue: bool

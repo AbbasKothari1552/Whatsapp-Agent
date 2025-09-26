@@ -96,18 +96,6 @@ async def chat(user_id: str, message: str, file: str = None):
             config=config,
         )
 
-    # # Log conversation using transaction
-    # async with checkpoint_db.transaction() as conn:
-    #     await log_conversation(conn, thread_id, user_id, response["messages"])
-
-    # # Embed and store log conversation
-    # await qdrant_manager.save_messages(
-    #     user_id=user_id,
-    #     thread_id=thread_id,
-    #     messages=response["messages"],
-    #     embed_fn=embed_text
-    # )
-
     output_message = response.get("response")
 
     return {"response": response, "output_message": output_message}

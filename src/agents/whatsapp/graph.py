@@ -38,7 +38,14 @@ async def build_graph(checkpointer) -> StateGraph:
         }
     )
     graph_builder.add_edge("VoiceTranscriptionNode", "AnalyzerNode")
-    graph_builder.add_edge("DocParserSubGraph", "AnalyzerNode")
+    graph_builder.add_conditional_edges(
+        "DocParserSubGraph",
+        analyzer_router,
+        {
+            "assistant": "AssistantNode",
+            "end": END
+        }
+    )
     graph_builder.add_conditional_edges(
         "AnalyzerNode",
         analyzer_router,
