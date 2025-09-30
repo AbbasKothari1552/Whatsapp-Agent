@@ -2,10 +2,10 @@ from typing import List, Dict, Any
 from langchain_core.tools import tool
 
 from src.core.settings import settings
-from src.graph.state import ChatState
+from src.agents.whatsapp.state import ChatState
 # Assuming you already have qdrant_manager and client_db available
-from src.graph.utils.qdrant_db import qdrant_manager
-from src.graph.utils.ms_sql_manager import client_db
+from src.utils.qdrant_db import qdrant_manager
+from src.utils.ms_sql_manager import client_db
 from src.core.embeddings import embed_text
 from src.core.db_query import (
     SCHEMA_QUERY

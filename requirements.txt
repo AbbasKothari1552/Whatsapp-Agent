@@ -17,6 +17,7 @@ numpy
 # Persistence storing libraries
 langgraph-checkpoint-sqlite
 langgraph-checkpoint-postgres
+langgraph-cli[inmem]
 psycopg2-binary
 asyncpg
 
@@ -31,3 +32,12 @@ torch
 torchvision 
 transformers 
 pillow
+
+# document extraction library
+pdf2image
+pillow
+python-docx
+PyPDF2
+pdfminer.six 
+openpyxl
+easyocr

@@ -9,18 +9,19 @@ from src.core.settings import settings
 from src.core.prompts import (
     ANALYZER_SYSTEM_PROMPT,
     ANALYZER_USER_PROMPT,
+    ASSISTANT_SYSTEM_FILE_PROMPT,
     ASSISTANT_SYSTEM_PROMPT
 )
-from src.graph.tools import (
+from src.agents.whatsapp.tools import (
     make_vector_search,
     client_db_query,
     get_schema_details
 )
-from src.graph.utils.helpers import (
+from src.utils.helpers import (
     get_chat_model
 )
 
-from src.graph.state import ChatState
+from src.agents.whatsapp.state import ChatState
 
 from src.core.logging_config import get_logger
 logger = get_logger(__name__)
@@ -70,15 +71,26 @@ async def assistant_node(state: ChatState) -> ChatState:
     # Create ReAct agent
     react_agent = create_react_agent(model, tools=tools)
 
-    # Inject language dynamically here
-    system_prompt = ASSISTANT_SYSTEM_PROMPT.format(language=state.get('language'))
+    if state.get('is_doc'):
+        logger.info("Document in the query")
+        system_prompt = ASSISTANT_SYSTEM_FILE_PROMPT.format(language=state.get('language'))
 
-    # Build message sequence
-    messages = [
-        SystemMessage(content=system_prompt),
-        *state["messages"],  # previous conversation (history)
-        HumanMessage(content=state["query"])
-    ]
+        # Build message sequence
+        messages = [
+            SystemMessage(content=system_prompt),
+            *state["messages"],  # previous conversation (history)
+            HumanMessage(content=state["query"])
+        ]
+    else:
+        # Inject language dynamically here
+        system_prompt = ASSISTANT_SYSTEM_PROMPT.format(language=state.get('language'))
+
+        # Build message sequence
+        messages = [
+            SystemMessage(content=system_prompt),
+            *state["messages"],  # previous conversation (history)
+            HumanMessage(content=state["products"])
+        ]
 
     response = await react_agent.ainvoke({
         "messages": messages
@@ -136,6 +148,32 @@ async def voice_transcription_node(state: ChatState) -> ChatState:
     except Exception as e:
         logger.error(f"Error during voice transcription: {e}")
 
-
     return state
 
+async def doc_parser_subgraph_node(state: ChatState) -> ChatState:
+    # This is a placeholder function to represent the document parser subgraph node.
+    # The actual implementation will be handled by the subgraph itself.
+    logger.info("Entering Document Parser Subgraph Node")
+
+    from src.agents.document_parser.graph import document_parser_graph
+    from src.agents.document_parser.state import State as DocParserState
+
+    subgraph = await document_parser_graph()
+
+    subgraph_state = {
+        "file_path": state.get("file"),
+    }
+
+    subgraph_response = await subgraph.ainvoke(subgraph_state)
+
+    if subgraph_response.get("should_continue"):
+        state['should_continue'] = True
+        state['is_doc'] = True
+        state["doc_text"] = subgraph_response.get("doc_text")
+        state["doc_category"] = subgraph_response.get("doc_category")
+        state["products"] = subgraph_response.get("products", [])
+    else:
+        logger.error("Document parsing failed in subgraph.")
+        return state
+
+    return state

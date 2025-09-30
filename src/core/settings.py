@@ -62,5 +62,8 @@ class Settings(BaseSettings):
     AUDIO_EXTENSIONS: list = ["mp3", "wav", "ogg", "opus"]
     AUDIO_MODEL: str = "whisper-large-v3"
 
+    # Easyocr Languages list
+    EASYOCR_LANGUAGES: list = ['en']
+
 
 settings = Settings()
