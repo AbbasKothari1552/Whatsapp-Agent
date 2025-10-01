@@ -108,6 +108,8 @@ async def doc_analyzer_node(state: State) -> State:
     state['doc_category'] = content.get("doc_category")
     state['should_continue'] = content.get("should_continue")
     state['products'] = content.get("products", [])
+    if content.get("response"):
+        state["response"] = content.get("response", "")
 
     logger.info("Document analysis completed successfully.")
     return state

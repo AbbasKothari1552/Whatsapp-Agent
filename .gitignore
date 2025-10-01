@@ -12,6 +12,12 @@ wheels/
 # credentials
 .env
 
+# vector db
+qdrant_storage
+
+# models
+models
+
 # logs
 logs/
 .langgraph_api
@@ -20,3 +26,4 @@ service.py
 
 # test codes
 src/test
+data/
