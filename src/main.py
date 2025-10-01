@@ -6,7 +6,7 @@ if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
@@ -70,7 +70,11 @@ app = FastAPI(lifespan=lifespan)
 
 @app.post("/chat/")
 async def chat(user_id: str, message: str, file: str = None):
-    
+    # Save the uploaded file
+    if file:
+        from src.utils.file_handler import save_file
+        file_info = await save_file(file)
+        # You can access the saved file path with file_info["file_path"]
     # input_message = [HumanMessage(content=message)]
     thread_id = get_or_create_thread_id(user_id)
 
@@ -83,7 +87,9 @@ async def chat(user_id: str, message: str, file: str = None):
     }
 
     if file:
-        initial_state['file'] = file
+        initial_state['file'] = file_info["file_path"]
+    
+    logger.debug(f"Initial State: {initial_state}")
 
     # Use the context manager to get the actual saver
     async with AsyncPostgresSaver.from_conn_string(settings.PG_DATABASE_URL) as saver:

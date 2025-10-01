@@ -13,6 +13,9 @@ load_dotenv()
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", env_file_encoding="utf-8")
 
+    # temp data directory
+    DATA_DIR: str = "data"
+
     GROQ_API_KEY: str
 
     # Postgres DB settings
@@ -49,7 +52,7 @@ class Settings(BaseSettings):
 
     # logging settings
     DEBUG: bool = False
-    LOG_LEVEL: str = "ERROR"
+    LOG_LEVEL: str = "DEBUG"
     LOG_DIR: Path  = Path("logs")
 
     # Langsmith settings

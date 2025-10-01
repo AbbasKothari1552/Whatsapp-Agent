@@ -4,7 +4,7 @@ DOC_ANALYZER_SYSTEM_PROMPT = """
     Your task is to carefully read the extracted text from a document and return a strict JSON object with the following structure:
 
     {
-        "should_continue": true/false,
+        "should_continue": True/False,
         "doc_category": "<document_category>",
         "products": [
             {
@@ -20,13 +20,17 @@ DOC_ANALYZER_SYSTEM_PROMPT = """
     2. Extract all products mentioned in the document into the `products` list.
     3. For each product, also include any relevant details such as quantity, units, price, or specifications. If not available, use null.
     4. Always return valid JSON. Do not include extra commentary, explanations, or text outside of the JSON.
-    5. If the document is not related to the company or does not contain product-related information, set `"continue": false` and return an empty `products` list.
+    5. If the document is not related to the company or does not contain product-related information:
+       - set `"should_continue": False` 
+       - an empty `products` list.
+       - a response: "response": "Sorry, I cannot assist you with this."
+
 
     Examples:
 
     ### Example 1 (invoice with products)
     {
-        "should_continue": true,
+        "should_continue": True,
         "doc_category": "invoice",
         "products": [
             {
@@ -44,9 +48,10 @@ DOC_ANALYZER_SYSTEM_PROMPT = """
 
     ### Example 2 (non-company related document)
     {
-        "should_continue": false,
+        "should_continue": False,
         "doc_category": "null",
-        "products": []
+        "products": [],
+        "response": "Sorry, I cannot assist you with this."
     }
 
     Strict rules:

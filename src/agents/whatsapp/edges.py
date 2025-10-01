@@ -8,6 +8,7 @@ logger = get_logger(__name__)
 def file_router(state: ChatState):
     """Route to the correct node based on file type."""
     file = state.get("file")
+    logger.debug(f"Routing based on file: {file}")
     if not file:
         return "AnalyzerNode"   # no file → just go to normal assistant flow
     

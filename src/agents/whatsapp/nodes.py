@@ -75,11 +75,13 @@ async def assistant_node(state: ChatState) -> ChatState:
         logger.info("Document in the query")
         system_prompt = ASSISTANT_SYSTEM_FILE_PROMPT.format(language=state.get('language'))
 
+        products_content = json.dumps(state.get("products", {}), indent=2)
+
         # Build message sequence
         messages = [
             SystemMessage(content=system_prompt),
             *state["messages"],  # previous conversation (history)
-            HumanMessage(content=state["query"])
+            HumanMessage(content=products_content)
         ]
     else:
         # Inject language dynamically here
@@ -89,16 +91,14 @@ async def assistant_node(state: ChatState) -> ChatState:
         messages = [
             SystemMessage(content=system_prompt),
             *state["messages"],  # previous conversation (history)
-            HumanMessage(content=state["products"])
+            HumanMessage(content=state.get("query"))
         ]
 
     response = await react_agent.ainvoke({
         "messages": messages
     })
-
-    from pprint import pprint
-    print("Response:")
-    pprint(response)
+    
+    logger.debug(f"Assistant Node Response: {response}")
 
     if response:
         content = response["messages"][-1].content
@@ -137,8 +137,8 @@ async def voice_transcription_node(state: ChatState) -> ChatState:
                 model=settings.AUDIO_MODEL,
                 response_format="verbose_json",
             )
-        
-        print("Transcription result:", transcription.text)
+
+        logger.debug(f"Transcription result: {transcription.text}")
 
         state["voice_msg_transcription"] = transcription.text
         state["query"] = transcription.text
@@ -166,14 +166,18 @@ async def doc_parser_subgraph_node(state: ChatState) -> ChatState:
 
     subgraph_response = await subgraph.ainvoke(subgraph_state)
 
-    if subgraph_response.get("should_continue"):
+    should_continue = subgraph_response.get("should_continue")
+
+    if should_continue:
         state['should_continue'] = True
         state['is_doc'] = True
         state["doc_text"] = subgraph_response.get("doc_text")
         state["doc_category"] = subgraph_response.get("doc_category")
         state["products"] = subgraph_response.get("products", [])
     else:
-        logger.error("Document parsing failed in subgraph.")
+        state['should_continue'] = False
+        state['is_doc'] = True
+        state["response"] = subgraph_response.get("response", "Sorry, I cannot assist you with this.")
         return state
 
     return state
