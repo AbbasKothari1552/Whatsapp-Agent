@@ -6,11 +6,13 @@ from langgraph.prebuilt import create_react_agent
 from langchain_core.prompts import ChatPromptTemplate
 
 from src.core.settings import settings
-from src.core.prompts import (
+from src.agents.whatsapp.prompts import (
     ANALYZER_SYSTEM_PROMPT,
     ANALYZER_USER_PROMPT,
+    ASSISTANT_SYSTEM_PROMPT,
     ASSISTANT_SYSTEM_FILE_PROMPT,
-    ASSISTANT_SYSTEM_PROMPT
+    USER_FILE_PROMPT_WITH_MESSAGE,
+    USER_FILE_PROMPT_WITHOUT_MESSAGE
 )
 from src.agents.whatsapp.tools import (
     make_vector_search,
@@ -33,8 +35,8 @@ async def analyzer_node(state: ChatState) -> ChatState:
     # Build message sequence
     messages = [
         SystemMessage(content=ANALYZER_SYSTEM_PROMPT),
-        *state["messages"],  # previous conversation (history)
-        HumanMessage(content=state["query"])
+        *state["messages"][-10:],  # get last 10 messages
+        HumanMessage(content=state.get("query"))
     ]
 
     try:
@@ -73,24 +75,31 @@ async def assistant_node(state: ChatState) -> ChatState:
 
     if state.get('is_doc'):
         logger.info("Document in the query")
-        system_prompt = ASSISTANT_SYSTEM_FILE_PROMPT.format(language=state.get('language'))
-
-        products_content = json.dumps(state.get("products", {}), indent=2)
+        system_prompt = ASSISTANT_SYSTEM_FILE_PROMPT
+        if state.get("query", "").strip():
+            user_prompt = USER_FILE_PROMPT_WITH_MESSAGE.format(
+                user_message=state.get("query", ""),
+                products=json.dumps(state.get("products", {}), indent=2)
+            )
+        else:
+            user_prompt = USER_FILE_PROMPT_WITHOUT_MESSAGE.format(
+                products=json.dumps(state.get("products", {}), indent=2)
+            )
 
         # Build message sequence
         messages = [
             SystemMessage(content=system_prompt),
-            *state["messages"],  # previous conversation (history)
-            HumanMessage(content=products_content)
+            *state["messages"][-10:],  # get last 10 messages
+            HumanMessage(content=user_prompt)
         ]
     else:
         # Inject language dynamically here
-        system_prompt = ASSISTANT_SYSTEM_PROMPT.format(language=state.get('language'))
+        system_prompt = ASSISTANT_SYSTEM_PROMPT
 
         # Build message sequence
         messages = [
             SystemMessage(content=system_prompt),
-            *state["messages"],  # previous conversation (history)
+            *state["messages"][-10:],  # get last 10 messages
             HumanMessage(content=state.get("query"))
         ]
 

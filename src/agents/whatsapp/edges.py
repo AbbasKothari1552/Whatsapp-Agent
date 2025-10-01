@@ -18,10 +18,6 @@ def file_router(state: ChatState):
         state["file_extension"] = file_lower.split(".")[-1]
         state["is_voice_msg"] = True
         return "VoiceTranscriptionNode"
-    # elif any(file_lower.endswith(ext) for ext in settings.IMAGE_EXTENSIONS):
-    #     state["file_extension"] = file_lower.split(".")[-1]
-    #     state["is_voice_msg"] = False
-    #     return "ImageNode"
     else:
         return "DocParserSubGraph"  # default to document parser for other file types
 
