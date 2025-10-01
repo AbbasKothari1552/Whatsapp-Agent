@@ -11,7 +11,7 @@ from src.agents.document_parser.tools import (
     extract_image_text, 
     extract_pdf_text
     )
-from src.core.prompts import (
+from src.agents.document_parser.prompts import (
      DOC_ANALYZER_SYSTEM_PROMPT,
      DOC_ANALYZER_HUMAN_PROMPT
 )

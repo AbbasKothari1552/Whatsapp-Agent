@@ -23,7 +23,6 @@ async def build_graph(checkpointer) -> StateGraph:
     graph_builder.add_node("AnalyzerNode", analyzer_node)
     graph_builder.add_node("AssistantNode", assistant_node)
     graph_builder.add_node("VoiceTranscriptionNode", voice_transcription_node)
-
     # Add sub graph
     graph_builder.add_node("DocParserSubGraph", doc_parser_subgraph_node)
 
