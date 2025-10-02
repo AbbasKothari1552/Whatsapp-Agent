@@ -7,6 +7,7 @@ from langgraph.graph.message import add_messages
 class ChatState(TypedDict):
     thread_id: str
     user_id: str
+    user_name: str
     query: str
     file: str
     file_extension: str

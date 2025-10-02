@@ -69,7 +69,7 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.post("/chat/")
-async def chat(user_id: str, message: str = None, file: str = None):
+async def chat(user_id: str, name: str, message: str = None, file: str = None):
     # Save the uploaded file
     if file:
         from src.utils.file_handler import save_file
@@ -83,6 +83,7 @@ async def chat(user_id: str, message: str = None, file: str = None):
     initial_state = {
         'thread_id': thread_id,
         'user_id': user_id,
+        'user_name': name,
         'query': "",
         'file': ""
     }

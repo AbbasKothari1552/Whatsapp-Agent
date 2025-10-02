@@ -15,17 +15,7 @@ def extract_docx_text(input_path: str) -> Dict:
         doc = Document(input_path)
         text = "\n".join([para.text for para in doc.paragraphs])
 
-        # # Extract and print the text from each paragraph
-        # for para in doc.paragraphs:
-        #     print(para.text)
-        #     logger.info("Extracted text:", para.text)
-
         logger.debug(f"Extracted text: {text}")
-        
-        # with open(output_path, 'w', encoding='utf-8') as f:
-        #     f.write(text)
-        
-        # logger.info(f"Extracted [saved]: {output_path}")
 
         return {
             "content_type": "text",
