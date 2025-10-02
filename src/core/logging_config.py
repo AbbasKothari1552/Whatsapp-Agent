@@ -10,7 +10,7 @@ settings.LOG_DIR.mkdir(exist_ok=True)
 
 # Current date for log filename
 CURRENT_DATE = datetime.now().strftime("%Y-%m-%d")
-LOG_FILE = settings.LOG_DIR / f"dms_{CURRENT_DATE}.log"
+LOG_FILE = settings.LOG_DIR / f"{CURRENT_DATE}.log"
 
 # Basic configuration
 logging.basicConfig(
@@ -18,12 +18,13 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
         logging.FileHandler(LOG_FILE),
-        # logging.StreamHandler(sys.stdout)
+        # logging.StreamHandler(sys.stdout) # uncomment for console logs
     ]
 )
 
 def get_logger(name: str) -> logging.Logger:
     """Get a configured logger instance"""
     logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG if settings.DEBUG else logging.INFO)
+    logger.setLevel(settings.DEBUG)
+    logger.propagate = True              # make sure it bubbles up
     return logger

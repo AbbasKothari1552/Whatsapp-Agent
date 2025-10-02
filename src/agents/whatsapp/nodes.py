@@ -32,9 +32,13 @@ logger = get_logger(__name__)
 async def analyzer_node(state: ChatState) -> ChatState:
     model = get_chat_model()
 
+    logger.debug(f"Initial State: {state}")
+
+    system_prompt = ANALYZER_SYSTEM_PROMPT.format_map({"user_name": state.get("user_name", "")})
+
     # Build message sequence
     messages = [
-        SystemMessage(content=ANALYZER_SYSTEM_PROMPT),
+        SystemMessage(content=system_prompt),
         *state["messages"][-10:],  # get last 10 messages
         HumanMessage(content=state.get("query"))
     ]

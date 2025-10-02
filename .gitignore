@@ -16,7 +16,7 @@ wheels/
 qdrant_storage
 
 # models
-models
+models/
 
 # logs
 logs/
