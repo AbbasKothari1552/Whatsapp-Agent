@@ -28,6 +28,8 @@ from src.utils.helpers import (
 from src.core.logging_config import get_logger
 logger = get_logger(__name__)
 
+# for doc rag
+from src.agents.whatsapp_rag.qdrant_client import qdrant_manager as qdrant_manager_rag
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,6 +45,9 @@ async def lifespan(app: FastAPI):
 
         # Initialize Qdrant connection
         await qdrant_manager.connect()
+
+        # for whatsapp rag
+        await qdrant_manager_rag.connect()
 
         # test
         await client_db.create_pool()
@@ -103,6 +108,10 @@ async def chat(user_id: str, name: str, message: str = None, file: str = None):
     async with AsyncPostgresSaver.from_conn_string(settings.PG_DATABASE_URL) as saver:
         await saver.setup()
         # Build graph with that saver
+        # graph = await build_graph(checkpointer=saver)
+
+        # for doc rag
+        from src.agents.whatsapp_rag.graph import build_graph
         graph = await build_graph(checkpointer=saver)
 
         response = await graph.ainvoke(
