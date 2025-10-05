@@ -37,7 +37,7 @@ async def rag_assistant_node(state: State) -> State:
         # Build message sequence
         messages = [
             SystemMessage(content=system_prompt),
-            *state["messages"][-10:],  # previous conversation (history)
+            # *state["messages"][-10:],  # previous conversation (history)
             HumanMessage(content=state.get("query"))
         ]
 
